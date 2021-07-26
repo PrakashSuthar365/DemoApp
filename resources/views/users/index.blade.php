@@ -148,12 +148,6 @@
                       <p>{{ __('RTL Support') }}</p>
                     </a>
                   </li>
-                  <li class="nav-item active-pro{{ $activePage == 'upgrade' ? ' active' : '' }}">
-                    <a class="nav-link text-white bg-danger" href="{{ route('upgrade') }}">
-                      <i class="material-icons text-white">unarchive</i>
-                      <p>{{ __('Upgrade to PRO') }}</p>
-                    </a>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -262,7 +256,7 @@
                           Admin Admin
                         </td>
                         <td>
-                          admin@material.com
+                          
                         </td>
                         <td>
                           2020-02-24
