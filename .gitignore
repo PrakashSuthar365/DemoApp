@@ -4,3 +4,11 @@
 .node_modules/*
 node_modules
 vendor
+/node_modules
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+Homestead.json
+Homestead.yaml
+.env
