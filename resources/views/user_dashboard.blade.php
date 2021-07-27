@@ -112,7 +112,8 @@
                         <h4 class="modal-title" id="modelHeading"></h4>
                     </div>
                     <div class="modal-body">
-                        <form id="productForm" name="productForm" class="form-horizontal">
+                        <form method="POST" id="productForm" name="productForm" class="form-horizontal" enctype="multipart/form-data">
+                            {!! csrf_field() !!}
                             <input type="hidden" name="product_id" id="product_id">
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
@@ -120,16 +121,21 @@
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" value="" maxlength="50" required="">
                                 </div>
                             </div>
-            
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Details</label>
                                 <div class="col-sm-12">
                                     <textarea id="detail" name="detail" required="" placeholder="Enter Details" class="form-control"></textarea>
                                 </div>
                             </div>
-            
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Save changes</button>
+                            <div class="fileinput fileinput-new" data-provides="fileinput" style="margin-left:16px;">
+                                <input type="file" class="form-control" id="image" name="image" required="">
+                            </div>
+                            <div class="col-sm-12 pull-right">
+                                <img id="preview-image" src="https://www.riobeauty.co.uk/images/product_image_not_found.gif"
+                                    alt="preview image" style="max-height: 250px;">
+                            </div>
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-primary float-right" id="saveBtn" value="create">Save changes</button>
                             </div>
                         </form>
                     </div>
@@ -150,7 +156,15 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-    
+        
+        $('#image').change(function(){
+           let reader = new FileReader();
+            reader.onload = (e) => { 
+                $('#preview-image').attr('src', e.target.result); 
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
         var table = $('.data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -165,9 +179,14 @@
      
         $('#createNewProduct').click(function () {
             $('#saveBtn').val("create-product");
+            $('#image').val('');
+            $('#name').val('');
+            $('#detail').val('');
             $('#product_id').val('');
-            $('#productForm').trigger("reset");
+            // $('#productForm').trigger("reset");
             $('#modelHeading').html("Create New Product");
+            $('#id').val('');
+            $('#preview-image').attr('src', 'https://www.riobeauty.co.uk/images/product_image_not_found.gif');
             $('#ajaxModel').modal('show');
         });
     
@@ -183,38 +202,64 @@
             })
         });
     
-        $('#saveBtn').click(function (e) {
-            // e.preventDefault();
-            // $(this).html('Sending..');
-            $("form[name='productForm']").validate({   //#register-form is form id
-                // Specify the validation rules
-                rules: {
-                    name: "required", //firstname is corresponding input name   
-                    detail: "required", //firstname is corresponding input name
-                },
-                // Specify the validation error messages
-                messages: {
-                    name: "Enter Name",
-                    detail: "Enter Detail"
-                },
-                submitHandler: function(form) {
-                    $.ajax({
-                        data: $('#productForm').serialize(),
-                        url: "{{ route('ajaxproducts.store') }}",
-                        type: "POST",
-                        dataType: 'json',
-                        success: function (data) {
-                            $('#productForm').trigger("reset");
-                            $('#ajaxModel').modal('hide');
-                            table.draw();
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                            $('#saveBtn').html('Save Changes');
-                        }
-                    });
-                }
-            });
+        // $('#saveBtn').click(function (e) {
+        //     // e.preventDefault();
+        //     // $(this).html('Sending..');
+        //     $("form[name='productForm']").validate({   //#register-form is form id
+        //         // Specify the validation rules
+        //         rules: {
+        //             name: "required", //firstname is corresponding input name   
+        //             detail: "required", //firstname is corresponding input name
+        //         },
+        //         // Specify the validation error messages
+        //         messages: {
+        //             name: "Enter Name",
+        //             detail: "Enter Detail"
+        //         },
+        //         submitHandler: function(form) {
+        //             $.ajax({
+        //                 data: $('#productForm').serialize(),
+        //                 url: "{{ route('ajaxproducts.store') }}",
+        //                 type: "POST",
+        //                 dataType: 'json',
+        //                 success: function (data) {
+        //                     $('#image').val('');
+        //                     $('#name').val('');
+        //                     $('#detail').val('');
+        //                     $('#preview-image').attr('src', 'https://www.riobeauty.co.uk/images/product_image_not_found.gif');
+        //                     $('#ajaxModel').modal('hide');
+        //                     table.draw();
+        //                 },
+        //                 error: function (data) {
+        //                     console.log('Error:', data);
+        //                     $('#saveBtn').html('Save Changes');
+        //                 }
+        //             });
+        //         }
+        //     });
+        // });
+        
+        $('#productForm').submit(function(e) {
+            e.preventDefault();
+            var f = $('#FormData');
+            var formData = new FormData(f);
+            console.log(formData.getAll());
+            // $.ajax({
+            //     type: 'POST',
+            //     url: "{{ url('/uploadfile') }}",
+            //     data: formData,
+            //     cache: false,
+            //     contentType: false,
+            //     processData: false,
+            //     success: (data) => {
+            //         this.reset();
+            //         alert('File has been uploaded successfully');
+            //         console.log(data);
+            //     },
+            //     error: function (data) {
+            //         console.log(data);
+            //     }
+            // });
         });
 
         $('body').on('click', '.deleteProduct', function (){

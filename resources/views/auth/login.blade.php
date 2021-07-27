@@ -14,16 +14,17 @@
           <div class="card-header card-header-primary text-center">
             <h4 class="card-title"><strong>{{ __('Login') }}</strong></h4>
             <div class="social-line">
-              <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+              {{-- <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
                 <i class="fa fa-facebook-square"></i>
               </a>
               <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
                 <i class="fa fa-twitter"></i>
-              </a>
-              <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
-                <i class="fa fa-google-plus"></i>
-              </a>
-            </div>
+              </a> --}}
+              {{-- <a href="{{ route('redirect') }}" class="btn btn-primary"><i class="fa fa-google"></i>Google</a> --}}
+              <a href="{{ route('auth/google') }}" class="btn btn-danger">
+                {{ __('Login with Google') }}
+            </a>
+              </div>
           </div>
           <div class="card-body">
             <p class="card-description text-center">{{ __('Or Sign in with ') }} <strong>admin@material.com</strong> {{ __(' and the password ') }}<strong>secret</strong> </p>

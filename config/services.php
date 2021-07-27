@@ -23,7 +23,11 @@ return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
-
+    'google' => [
+        'client_id'     => '530956232592-q5hdrbp4fl92njjq3q082nbhn8a1t08c.apps.googleusercontent.com',
+        'client_secret' => '69V5-WCrOP3gAQ2aZp3s74gL',
+        'redirect'      => 'http://localhost:8000/auth/google-callback'
+    ],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

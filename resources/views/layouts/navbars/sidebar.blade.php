@@ -6,7 +6,7 @@
   -->
   <div class="logo">
     <a href="https://creative-tim.com/" class="simple-text logo-normal">
-      {{ __('Creative Tim') }}
+      {{ \Auth::user()->name }}
     </a>
   </div>
   <div class="sidebar-wrapper">

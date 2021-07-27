@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use Socialite;
 class HomeController extends Controller
 {
     /**
@@ -47,6 +48,33 @@ class HomeController extends Controller
         try {
             User::find($id)->delete();
             return response()->json(['success'=>'User deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error'=>$e->getMessage()]);
+        }
+    }
+
+    public function redirect() {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function callback($id) {
+        try {
+            $user = Socialite::driver('google')->user();
+            $user = User::where('google_id', $user->id)->first();
+
+            if($user){
+                Auth::login($user);
+                return redirect('/home');
+            }else{
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'google_id'=> $user->id,
+                    'password' => encrypt('123456dummy')
+                ]);
+                Auth::login($newUser);
+                return redirect('/home');
+            }
         } catch (\Exception $e) {
             return response()->json(['error'=>$e->getMessage()]);
         }
