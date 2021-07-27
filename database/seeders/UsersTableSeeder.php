@@ -15,26 +15,18 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $userData = [
-            [
-               'name'=>'admin',
-               'email'=>'a@admin.com',
-               'role_id'=>'1',
-               'password'=> Hash::make('123456'),
-            ],
-            [
-               'name'=>'user',
-               'email'=>'b@user.com',
-               'role_id'=>'2',
-               'password'=> Hash::make('123456'),
-            ],
-            [
-               'name'=>'guest',
-               'email'=>'c@user.com',
-                'role_id'=>'2',
-               'password'=> Hash::make('123456'),
-            ],
-        ];
+        $userData = [];
+        for ($i = 0; $i < 100; ++$i) {
+            $type = rand(1,2);
+            $userType = ($type == 1) ? 'admin':'user';
+            $arr = [
+                'name'=>$userType.$i,
+                'email'=>$userType.$i.'@admin.com',
+                'role_id'=>$type,
+                'password'=> Hash::make('123456'),
+            ];
+            $userData[] = $arr;
+        }
   
         foreach ($userData as $key => $val) {
             User::create($val);

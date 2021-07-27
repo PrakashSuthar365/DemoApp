@@ -19,33 +19,36 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-    {
-        // redirect to user home screeen
-        if(auth()->user()->role_id == "1"){
-            if(request()->ajax()) {
-                return datatables()->of(User::where('role_id',1))
-                ->addColumn('action', function($row){
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Block" class="edit btn btn-primary btn-sm blockUser">Block</a>';
-                    $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser">Delete</a>';
-                    return $btn;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+    {   
+        try {
+            if(auth()->user()->role_id == "1"){
+                if(request()->ajax()) {
+                    return datatables()->of(User::where('role_id',2))
+                    ->addColumn('action', function($row){
+                        $btn = '';
+                        $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser" >Delete</a>';
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+                }
+                return view('admin_dashboard');
+    
+            // redirect to Admin home screen
+            } else {
+                return view('user_dashboard');
             }
-            return view('admin_dashboard');
-
-        // redirect to Admin home screen
-        } else {
-            return view('user_dashboard');
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 
     public function delete($id) {
-        User::find($id)->delete();
-        return response()->json(['success'=>'User deleted successfully.']);
-    }
-
-    public function block($id) {
-        dd($id);
+        try {
+            User::find($id)->delete();
+            return response()->json(['success'=>'User deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error'=>$e->getMessage()]);
+        }
     }
 }

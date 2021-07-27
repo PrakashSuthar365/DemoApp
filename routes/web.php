@@ -12,13 +12,15 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\ProductAjaxController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Auth::routes();
-
+Route::resource('ajaxproducts',ProductAjaxController::class);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes();
 

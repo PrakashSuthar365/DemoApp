@@ -25,7 +25,7 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email</th>
-                                        <th>Action</th>
+                                        <th  width="280px">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -70,9 +70,16 @@
     });
 
     $('body').on('click', '.deleteUser', function (){
-        var id = $(this).data("id");
-        var result = confirm("Are You sure want to delete !");
-        if(result){
+        swal({
+            title: `Are you sure you want to delete this record?`,
+            text: "If you delete this, it will be gone forever.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            var id = $(this).data("id");
             $.ajax({
                 type: "DELETE",
                 url: "delete-user"+'/'+id,
@@ -83,9 +90,9 @@
                     console.log('Error:', data);
                 }
             });
-        }else{
-            return false;
         }
+        });
+        
     });
 
     $('body').on('click', '.blockUser', function (){
