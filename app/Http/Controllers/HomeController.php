@@ -20,7 +20,7 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-    {   
+    {
         try {
             if(auth()->user()->role_id == "1"){
                 if(request()->ajax()) {

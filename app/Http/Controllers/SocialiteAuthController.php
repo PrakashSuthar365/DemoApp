@@ -11,9 +11,14 @@ use Hash;
 
 class SocialiteAuthController extends Controller
 {
-    public function googleRedirect()
-    {
-        return Socialite::driver('google')->redirect();
+    public function googleRedirect() { 
+
+        try { 
+            return Socialite::driver('google')->redirect();
+        
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -21,13 +26,12 @@ class SocialiteAuthController extends Controller
      *
      * @return void
      */
-    public function loginWithGoogle()
-    {
+    public function loginWithGoogle() {
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
-            
-            $user = User::where('google_id', $googleUser->id)->first();
-            // dd($user);
+            $user       = User::where('google_id', $googleUser->id)->first();
+
             if($user){
                 Auth::login($user);
                 return redirect('/home');
@@ -46,8 +50,8 @@ class SocialiteAuthController extends Controller
                 return redirect('/home');
             }
 
-        } catch (Exception $exception) {
-            dd(111,$exception);
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 }

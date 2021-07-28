@@ -92,6 +92,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
+                                            <th>Image</th>
                                             <th>Details</th>
                                             <th width="280px">Action</th>
                                         </tr>
@@ -112,8 +113,7 @@
                         <h4 class="modal-title" id="modelHeading"></h4>
                     </div>
                     <div class="modal-body">
-                        <form method="POST" id="productForm" name="productForm" class="form-horizontal" enctype="multipart/form-data">
-                            {!! csrf_field() !!}
+                        <form id="productForm" name="productForm" class="form-horizontal" enctype="multipart/form-data">
                             <input type="hidden" name="product_id" id="product_id">
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
@@ -124,7 +124,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Details</label>
                                 <div class="col-sm-12">
-                                    <textarea id="detail" name="detail" required="" placeholder="Enter Details" class="form-control"></textarea>
+                                    <textarea id="detail" name="detail" required="" placeholder="Enter Details" class="form-control" value=""></textarea>
                                 </div>
                             </div>
                             <div class="fileinput fileinput-new" data-provides="fileinput" style="margin-left:16px;">
@@ -172,6 +172,7 @@
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'name', name: 'name'},
+                {data: 'image', name: 'image'},
                 {data: 'detail', name: 'detail'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
@@ -199,67 +200,36 @@
                 $('#product_id').val(data.id);
                 $('#name').val(data.name);
                 $('#detail').val(data.detail);
+                $('#preview-image').attr('src', data.image);
             })
         });
-    
-        // $('#saveBtn').click(function (e) {
-        //     // e.preventDefault();
-        //     // $(this).html('Sending..');
-        //     $("form[name='productForm']").validate({   //#register-form is form id
-        //         // Specify the validation rules
-        //         rules: {
-        //             name: "required", //firstname is corresponding input name   
-        //             detail: "required", //firstname is corresponding input name
-        //         },
-        //         // Specify the validation error messages
-        //         messages: {
-        //             name: "Enter Name",
-        //             detail: "Enter Detail"
-        //         },
-        //         submitHandler: function(form) {
-        //             $.ajax({
-        //                 data: $('#productForm').serialize(),
-        //                 url: "{{ route('ajaxproducts.store') }}",
-        //                 type: "POST",
-        //                 dataType: 'json',
-        //                 success: function (data) {
-        //                     $('#image').val('');
-        //                     $('#name').val('');
-        //                     $('#detail').val('');
-        //                     $('#preview-image').attr('src', 'https://www.riobeauty.co.uk/images/product_image_not_found.gif');
-        //                     $('#ajaxModel').modal('hide');
-        //                     table.draw();
-        //                 },
-        //                 error: function (data) {
-        //                     console.log('Error:', data);
-        //                     $('#saveBtn').html('Save Changes');
-        //                 }
-        //             });
-        //         }
-        //     });
-        // });
         
         $('#productForm').submit(function(e) {
-            e.preventDefault();
-            var f = $('#FormData');
-            var formData = new FormData(f);
-            console.log(formData.getAll());
-            // $.ajax({
-            //     type: 'POST',
-            //     url: "{{ url('/uploadfile') }}",
-            //     data: formData,
-            //     cache: false,
-            //     contentType: false,
-            //     processData: false,
-            //     success: (data) => {
-            //         this.reset();
-            //         alert('File has been uploaded successfully');
-            //         console.log(data);
-            //     },
-            //     error: function (data) {
-            //         console.log(data);
-            //     }
-            // });
+            
+            var formData = new FormData();
+            formData.append('detail',$('#detail').val());
+            formData.append('name',$('#name').val());
+            formData.append('image',$('#image')[0].files[0]);
+            $.ajax({
+                data: formData,
+                url: "{{ route('ajaxproducts.store') }}",
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('#image').val('');
+                    $('#name').val('');
+                    $('#detail').val('');
+                    $('#preview-image').attr('src', 'https://www.riobeauty.co.uk/images/product_image_not_found.gif');
+                    $('#ajaxModel').modal('hide');
+                    table.draw();
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                    $('#saveBtn').html('Save Changes');
+                }
+            });
         });
 
         $('body').on('click', '.deleteProduct', function (){

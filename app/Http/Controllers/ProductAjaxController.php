@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use DataTables;
+use File;
+use Storage;
+use Exception;
 
 class ProductAjaxController extends Controller
 {
@@ -13,26 +16,33 @@ class ProductAjaxController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-        $logged_user_id = \Auth::user()->id;
-        if ($request->ajax()) {
-            $data = Product::where('created_by',$logged_user_id)->latest()->get();
-            return Datatables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($row){
-   
-                           $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editProduct">Edit</a>';
-   
-                           $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct">Delete</a>';
-    
+    public function index(Request $request) {
+        
+        try { 
+            $logged_user_id = \Auth::user()->id;
+            if ($request->ajax()) {
+                
+                $data = Product::where('created_by',$logged_user_id)->latest()->get();
+                
+                return Datatables::of($data)
+                        ->addIndexColumn()
+                        ->addColumn('action', function($row){
+                            $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editProduct">Edit</a>';
+                            $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct">Delete</a>';
                             return $btn;
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
+                        })
+                        ->addColumn('image', function ($img) {
+                            return '<img src="'.$img->image.'" border="0" width="100" class="img-rounded" align="center" />';
+                        })
+                        ->rawColumns(['image','action'])
+                        ->make(true);
+            }
+        
+            return view('productAjax');
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
-      
-        return view('productAjax');
     }
 
     /**
@@ -41,13 +51,34 @@ class ProductAjaxController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $logged_user_id = \Auth::user()->id;
-        Product::updateOrCreate(['id' => $request->product_id],
-                ['name' => $request->name, 'detail' => $request->detail, 'created_by' => $logged_user_id]);        
-   
-        return response()->json(['success'=>'Product saved successfully.']);
+    public function store(Request $request) {
+
+        try{ 
+            if($request->hasFile('image')) {
+                $contenet   = file_get_contents($request->image->getRealPath());
+                $file_name  = rand().time().rand(1,99).".jpeg";
+                $file_move  = Storage::disk('public')->put($file_name,$contenet);
+            }else {
+                $file_move  = false;
+            }
+
+            $logged_user_id = \Auth::user()->id;
+
+            Product::updateOrCreate(
+                ['id' => $request->product_id],
+                [
+                    'name'          => $request->name, 
+                    'detail'        => $request->detail, 
+                    'created_by'    => $logged_user_id,
+                    'image'         => ($file_move == true) ? $file_name : ''
+                ]
+            );        
+    
+            return response()->json(['success'=>'Product saved successfully.']);
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
     /**
      * Show the form for editing the specified resource.
@@ -55,10 +86,15 @@ class ProductAjaxController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        $product = Product::find($id);
-        return response()->json($product);
+    public function edit($id) {
+
+        try{
+            $product = Product::find($id);
+            return response()->json($product);
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -67,10 +103,14 @@ class ProductAjaxController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        Product::find($id)->delete();
-     
-        return response()->json(['success'=>'Product deleted successfully.']);
+    public function destroy($id) {
+
+        try{ 
+            Product::find($id)->delete();
+            return response()->json(['success'=>'Product deleted successfully.']);
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

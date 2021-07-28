@@ -14,8 +14,8 @@ class UserController extends Controller
      * @param  \App\Models\User  $model
      * @return \Illuminate\View\View
      */
-    public function index(User $model)
-    {
+    public function index(User $model) {
+        
         return view('users.index', ['users' => $model->paginate(15)]);
     }
 }

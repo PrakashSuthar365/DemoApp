@@ -19,18 +19,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-Route::resource('ajaxproducts',ProductAjaxController::class);
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Auth URLS
 Auth::routes();
 
+// Product CRUD URLS
+Route::resource('ajaxproducts',ProductAjaxController::class);
+
+// Home & Google Login URLS
 Route::get('google', [App\Http\Controllers\SocialiteAuthController::class, 'googleRedirect'])->name('auth/google');
 Route::get('/auth/google-callback', [App\Http\Controllers\SocialiteAuthController::class, 'loginWithGoogle']);
-
-Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home')->middleware('auth');
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home')->middleware('auth');
 
+// Theme Demo URLS
 Route::group(['middleware' => 'auth'], function () {
+	
 	Route::get('table-list', function () {
 		return view('pages.table_list');
 	})->name('table');
@@ -63,6 +65,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/block-user/{id}', 'App\Http\Controllers\HomeController@block');
 });
 
+// THEME URLS
 Route::group(['middleware' => 'auth'], function () {
 	Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'App\Http\Controllers\ProfileController@edit']);
