@@ -52,14 +52,21 @@ class ProductAjaxController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-
-        try{ 
+        // dd($request->all());
+        try{
             if($request->hasFile('image')) {
                 $contenet   = file_get_contents($request->image->getRealPath());
                 $file_name  = rand().time().rand(1,99).".jpeg";
                 $file_move  = Storage::disk('public')->put($file_name,$contenet);
-            }else {
-                $file_move  = false;
+            } else {
+                if($request->product_id == '') {
+                    $file_move      = false;
+                }else {
+                    $file_move      = true;
+                    $productDetails = Product::find($request->product_id);
+                    $segments       = explode('/', $productDetails->image);
+                    $file_name      = $segments[count($segments)-1];
+                }
             }
 
             $logged_user_id = \Auth::user()->id;

@@ -128,7 +128,7 @@
                                 </div>
                             </div>
                             <div class="fileinput fileinput-new" data-provides="fileinput" style="margin-left:16px;">
-                                <input type="file" class="form-control" id="image" name="image" required="">
+                                <input type="file" class="form-control" id="image" name="image">
                             </div>
                             <div class="col-sm-12 pull-right">
                                 <img id="preview-image" src="https://www.riobeauty.co.uk/images/product_image_not_found.gif"
@@ -205,11 +205,14 @@
         });
         
         $('#productForm').submit(function(e) {
-            
+            e.preventDefault();
             var formData = new FormData();
             formData.append('detail',$('#detail').val());
             formData.append('name',$('#name').val());
             formData.append('image',$('#image')[0].files[0]);
+            if($('#product_id').val() != '') {
+                formData.append('product_id',$('#product_id').val());
+            }
             $.ajax({
                 data: formData,
                 url: "{{ route('ajaxproducts.store') }}",
