@@ -203,6 +203,8 @@
                 $('#preview-image').attr('src', data.image);
             })
         });
+
+       
         
         $('#productForm').submit(function(e) {
             e.preventDefault();
